@@ -1,0 +1,1 @@
+void updateSchedule(char* fileName, int scheduleKind);
