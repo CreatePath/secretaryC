@@ -14,9 +14,9 @@ char* inputTable[3][4] = { // 순서대로 고정 스케줄, 일시 스케줄, 해야할 일에서 �
 		{"날짜", "활동 시간대", "할 일"},
 		{"날짜", "할 일", "예상소요시간"}
 };
-char* scheduleTable[4] = { "오늘 스케줄", "고정 스케줄", "일시 스케줄", "해야할 일" }; // 스케줄 종류를 모두 모아둠.
-char* fileTable[4] = { "today.txt", "fixed.txt", "temporary.txt", "ToDo.txt" }; // 각 스케줄을 저장하는 파일 배열
-char* wdayMap[7] = { "일", "월", "화", "수", "목", "금", "토" };
+char* scheduleTable[4] = {  "고정 스케줄", "일시 스케줄", "해야할 일", "오늘 스케줄" }; // 스케줄 종류를 모두 모아둠.
+char* fileTable[4] = { "fixed.txt", "temporary.txt", "ToDo.txt" }; // 각 스케줄을 저장하는 파일 배열
+char* wdayMap[7] = { "일", "월", "화", "수", "목", "금", "토" }; // 요일 매핑 테이블
 
 
 void displayMain(); // 메인메뉴를 보여줌
@@ -50,10 +50,10 @@ int main(void) {
 void displayMain() {
 	printf("\n==============================================\n\n");
 	printf("하고싶은 작업을 선택하세요. \n\n");
-	printf("[0] 오늘 하루 스케줄 생성 및 확인\n");
-	printf("[1] 고정 스케줄 확인\n");
-	printf("[2] 일시 스케줄 확인\n");
-	printf("[3] 해야할 일 확인\n");
+	printf("[0] 고정 스케줄 확인\n");
+	printf("[1] 일시 스케줄 확인\n");
+	printf("[2] 해야할 일 확인\n");
+	printf("[3] 오늘 하루 스케줄 생성 및 확인\n");
 	printf("[-1] 프로그램 종료\n\n");
 	printf("선택 (숫자만 입력): ");
 }
@@ -75,7 +75,7 @@ void gotoSchedule(int select) {
 	scheduleName = scheduleTable[select];
 
 	while (1) {
-		if (select == 0) { // 오늘 스케줄을 선택했을 경우
+		if (select == 3) { // 오늘 스케줄을 선택했을 경우
 			makeToday();
 			break; // 오늘 스케줄은 조회만 가능.
 		}
@@ -91,7 +91,7 @@ void gotoSchedule(int select) {
 			continue;
 		}
 		
-		gotoUpdateActivity(selectSub, fileName, select-1);
+		gotoUpdateActivity(selectSub, fileName, select);
 	}
 }
 

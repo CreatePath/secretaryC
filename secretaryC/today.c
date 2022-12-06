@@ -170,6 +170,37 @@ int cmpfunc(const void* first, const void* second) {
     return (intTime1[0] * 60 + intTime1[1] - intTime2[0] * 60 + intTime2[1]); // 음수가 나오면 왼쪽으로, 양수는 오른쪽으로 보냄.
 }
 
+// 일정이 겹치는지 확인하는 함수
+int checkDuplicated(TimeSchedule schedules[50], int size) {
+    char strSchedule1[10] = { 0 };
+    char strSchedule2[10] = { 0 };
+    int schedule1[2] = { 0 };
+    int schedule2[2] = { 0 };
+    int gap = 0;
+
+    for (int j = 0; j < size - 1; ++j) {
+        strcpy(strSchedule1, schedules[j].endTime);
+        strcpy(strSchedule2, schedules[j + 1].startTime);
+
+        transformTime(strSchedule1, schedule1);
+        transformTime(strSchedule2, schedule2);
+
+        gap = (schedule2[0] * 60 + schedule2[1]) - (schedule1[0] * 60 + schedule1[1]);
+
+        if (gap < 0) {
+            printf("\n아래 두 개의 일정이 겹칩니다.\n고정 스케줄 및 일시 스케줄에서 둘 중 하나를 수정하고 다시 와주세요.\n\n");
+
+            for (int k = 0; k < 2; ++k) {
+                printf("[%s ~ %s %s]\n", schedules[j+k].startTime, schedules[j+k].endTime, schedules[j+k].activity);
+            }
+
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
 // todoList를 TimeSchedule에 끼워넣는 함수
 int appendToDo(TimeSchedule schedules[50], ToDo todoList[50], int sSize, int todoSize) {
     int gap = 0;
@@ -211,29 +242,27 @@ int appendToDo(TimeSchedule schedules[50], ToDo todoList[50], int sSize, int tod
                 sSize++;
                 break;
             }
-            else {
-                if (j == sSize - 2) {
-                    strcpy(strSchedule2, schedules[j + 1].endTime);
-                    transformTime(strSchedule2, schedule2);
+            else if (j == sSize - 2) {
+                strcpy(strSchedule2, schedules[j + 1].endTime);
+                transformTime(strSchedule2, schedule2);
 
-                    gap = 24 * 60 - (schedule2[0] * 60 + schedule2[1]);
+                gap = 24 * 60 - (schedule2[0] * 60 + schedule2[1]);
                     
-                    if (gap < takenTime) {
-                        printf("'%s'은(는) 오늘 스케줄에 추가하지 못했습니다.\n", todoList[i].activity);
-                        break;
-                    }
-
-                    sprintf(schedules[sSize].startTime, "%d:%d", schedule2[0], schedule2[1]);
-
-                    schedule2[0] += (schedule2[1] + takenTime) / 60;
-                    schedule2[1] = (schedule2[1] + takenTime) % 60;
-                    
-                    sprintf(schedules[sSize].endTime, "%d:%d", schedule2[0], schedule2[1]);
-                    strcpy(schedules[sSize].activity, todoList[i].activity);
-
-                    sSize++;
+                if (gap < takenTime) {
+                    printf("'%s'은(는) 오늘 스케줄에 추가하지 못했습니다.\n", todoList[i].activity);
                     break;
                 }
+
+                sprintf(schedules[sSize].startTime, "%d:%d", schedule2[0], schedule2[1]);
+
+                schedule2[0] += (schedule2[1] + takenTime) / 60;
+                schedule2[1] = (schedule2[1] + takenTime) % 60;
+                    
+                sprintf(schedules[sSize].endTime, "%d:%d", schedule2[0], schedule2[1]);
+                strcpy(schedules[sSize].activity, todoList[i].activity);
+
+                sSize++;
+                break;
             }
         }
     }
@@ -264,15 +293,16 @@ void makeToday() {
     const time_t t = time(NULL);
     date = localtime(&t); // 현재 시각을 date에 저장.
 
-    FILE* fixed = fopen(fileTable[1], "r"); // 고정 스케줄 파일 포인터
-    FILE* tmpSchedule = fopen(fileTable[2], "r"); // 일시 스케줄 파일 포인터
-    FILE* toDo = fopen(fileTable[3], "r"); // 해야할 일 파일 포인터
+    FILE* fixed = fopen(fileTable[0], "r"); // 고정 스케줄 파일 포인터
+    FILE* tmpSchedule = fopen(fileTable[1], "r"); // 일시 스케줄 파일 포인터
+    FILE* toDo = fopen(fileTable[2], "r"); // 해야할 일 파일 포인터
 
     TimeSchedule schedules[50]; // 활동시간대가 포함된 스케줄들을 담을 구조체 배열
     ToDo todoList[50]; // 해야할 일 스케줄들을 담을 구조체 배열
 
     int tsIdx = 0; // schedules index
     int todoIdx = 0; // todoList index
+    int isDuplicated = 0; // 일정이 겹치는지 표시하는 정수
 
     tsIdx = insertTimeSchedule(date, schedules, fixed, tsIdx); // 고정 스케줄을 TimeSchedule 구조체 배열에 추가
     tsIdx = insertTimeSchedule(date, schedules, tmpSchedule, tsIdx); // 일시 스케줄을 TimeSchedule 구조체 배열에 추가
@@ -284,6 +314,9 @@ void makeToday() {
     fclose(toDo);
 
     qsort((TimeSchedule*)schedules, tsIdx, sizeof(TimeSchedule), cmpfunc); // TimeSchedule 배열을 startTime이 빠른 순서대로 정렬.
+
+    isDuplicated = checkDuplicated(schedules, tsIdx);
+    if (isDuplicated) return; // 중복된 일정이 있으면 함수에서 나오기.
 
     tsIdx = appendToDo(schedules, todoList, tsIdx, todoIdx); // TimeSchedule 배열에 todoList 끼워넣기
 

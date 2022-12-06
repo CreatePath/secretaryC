@@ -220,13 +220,22 @@ int askWhereChange(char* fileName, int scheduleKind, char wantToChange[3][30], c
 	int scheduleNum = 0, isFound = 0;
 	char ok = 0;
 
-	viewSchedule(fileName, scheduleTable[scheduleKind + 1]);
+	while (1) {
+		viewSchedule(fileName, scheduleTable[scheduleKind + 1]);
 
-	printf("%s하고 싶은 %s>>>", kind, inputTable[scheduleKind][0]);
-	gets_s(date, sizeof(date));
+		printf("%s하고 싶은 일정의 %s>>>", kind, inputTable[scheduleKind][0]);
+		gets_s(date, sizeof(date));
 
-	printf("'%s'에서 몇번째 일정을 %s하고 싶으신가요?>>>", date, kind);
-	scanf("%d", &scheduleNum); // 일정 순번 저장
+		printf("'%s'에서 몇번째 일정을 %s하고 싶으신가요?>>>", date, kind);
+		scanf("%d", &scheduleNum); // 일정 순번 저장
+		clearBuffer();
+
+		if (scheduleNum <= 0) {
+			printf("잘못된 입력입니다. 다시 입력해주세요.\n");
+			continue;
+		}
+		break;
+	}
 
 	isFound = findSchedule(wantToChange, fileName, date, scheduleNum); // 일정 찾기
 	if (isFound == -1) return -1; // 입력받은 요일(날짜)가 없거나, 일정 순번이 없으면 실패.
@@ -281,9 +290,9 @@ void updateFile(char* fileName, int scheduleNum, char change[3][30], char* kind)
 
 
 			if (fileData[strlen(fileData) - 1] == '\n') {
-				// 해당 요일(날짜)에 하나뿐인 일정을 삭제할 경우 요일(날짜)를 삭제하는 코드를 여기에 짤 예정
-
-				strcat(contents, "\n");
+				// 삭제하려는 일정이 사라지면 해당 요일(날짜)의 일정이 사라지는 경우 row자체를 지움. 
+				if (kind == "삭제" && scheduleNum == 1) memset(contents, 0, sizeof(contents));
+				else strcat(contents, "\n");
 			}
 			else {
 				fileData = strtok(NULL, ",");

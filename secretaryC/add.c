@@ -48,7 +48,6 @@ void writeFile(char* fileName, char answer[3][30]) {
 
 		while (fgets(fileBuff, sizeof(fileBuff), tmpf) != NULL) { // 임시 파일을 한줄씩 읽어서
 			fputs(fileBuff, fp); // 스케줄에 붙여넣기
-
 			memset(fileBuff, 0, sizeof(fileBuff));
 		}
 
