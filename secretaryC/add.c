@@ -1,11 +1,4 @@
-#define _CRT_SECURE_NO_WARNINGS
-#include <stdio.h>
-#include <string.h>
-#include <memory.h>
-#include "utils.h"
-
-extern char* tmpFile;
-extern char* inputTable[3][4]; // 순서대로 고정 스케줄, 일시 스케줄, 해야할 일에서 받아야하는 입력값
+#include "add.h"
 
 // 추가된 일정을 스케줄 파일에 추가하는 함수.
 void writeFile(char* fileName, char answer[3][30]) {
@@ -34,7 +27,9 @@ void writeFile(char* fileName, char answer[3][30]) {
 			sprintf(add, ",%s,%s\n", answer[1], answer[2]);
 			strcat(contents, add);
 		}
+
 		fputs(contents, tmpf); // contents 내용을 임시 파일에 추가.
+
 		memset(contents, 0, sizeof(contents));
 		memset(fileBuff, 0, sizeof(fileBuff));
 	}

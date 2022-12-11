@@ -15,7 +15,7 @@ char* inputTable[3][4] = { // 순서대로 고정 스케줄, 일시 스케줄, 해야할 일에서 �
 		{"날짜", "할 일", "예상소요시간"}
 };
 char* scheduleTable[4] = {  "고정 스케줄", "일시 스케줄", "해야할 일", "오늘 스케줄" }; // 스케줄 종류를 모두 모아둠.
-char* fileTable[4] = { "fixed.txt", "temporary.txt", "ToDo.txt" }; // 각 스케줄을 저장하는 파일 배열
+char* fileTable[3] = { "fixed.txt", "temporary.txt", "ToDo.txt" }; // 각 스케줄을 저장하는 파일 배열
 char* wdayMap[7] = { "일", "월", "화", "수", "목", "금", "토" }; // 요일 매핑 테이블
 
 

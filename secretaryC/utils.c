@@ -1,12 +1,4 @@
-#define _CRT_SECURE_NO_WARNINGS
-#include <stdio.h>
-#include <string.h>
-#include "read.h"
-
-extern char* tmpFile;
-extern char* inputTable[3][4]; // 순서대로 고정 스케줄, 일시 스케줄, 해야할 일에서 받아야하는 입력값
-extern char* scheduleTable[4]; // 순서대로 오늘 스케줄, 고정 스케줄, 일시 스케줄, 해야할 일
-extern char* wdayMap[7];
+#include "utils.h"
 
 // 입력 버퍼 비우는 함수
 void clearBuffer(void) { 
@@ -122,10 +114,12 @@ void getTime(int timeArr[2]) {
 	}
 }
 
-// 스케줄 요소를 사용자로부터 입력받는 함수. 다중 if문으로 받았는데 최선인가?
+// 스케줄 요소를 사용자로부터 입력받는 함수.
 void getScheduleInput(int scheduleKind, char answer[3][30], int i) {
 	int start[2] = { 0 };
 	int end[2] = { 0 };
+
+	printf("\n%s 입력(','는 입력불가)\n", inputTable[scheduleKind][i]);
 
 	while (1) {
 		if (strcmp(inputTable[scheduleKind][i], "날짜") == 0) {
@@ -156,8 +150,13 @@ void getScheduleInput(int scheduleKind, char answer[3][30], int i) {
 			sprintf(answer[i], "%d:%d", start[0], start[1]);
 		}
 		else {
-			printf("%s 입력>>>", inputTable[scheduleKind][i]);
 			gets_s(answer[i], sizeof(answer[i]));
+
+			if (strchr(answer[i], ',')) {
+				printf("','는 입력하실 수 없습니다.\n");
+				printf("다시 입력해주세요.\n");
+				continue;
+			}
 		}
 		break;
 	}

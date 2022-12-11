@@ -1,8 +1,4 @@
-#define _CRT_SECURE_NO_WARNINGS
-#include <stdio.h>
-#include <string.h>
-#include <memory.h>
-
+#include "read.h"
 
 // 스케줄 파일을 불러와 일정을 보여주는 함수
 void viewSchedule(char* fileName, char* scheduleName) {

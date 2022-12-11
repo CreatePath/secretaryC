@@ -1,9 +1,4 @@
-#define _CRT_SECURE_NO_WARNINGS
-#include <stdio.h>
-#include <string.h>
-#include <memory.h>
-#include "utils.h"
-#include "read.h"
+#include "delete.h"
 
 // 일정을 삭제하는 함수
 void deleteSchedule(char* fileName, int scheduleKind) {
